@@ -1,3 +1,5 @@
+![Preview](preview.png)
+
 # Installation Guide
 
 ## For Marzban
