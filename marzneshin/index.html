@@ -574,6 +574,10 @@
 
         translations: {
           fa: {
+            streisand: 'Streisand',
+            v2rayNG: 'V2rayNG',
+            streisandSettings: 'Streisand تنظیمات',
+            v2rayNGSettings: 'V2rayNG تنظیمات',
             subscriptionInfo: 'صفحه کاربری',
             username: 'نام کاربری',
             status: 'وضعیت',
@@ -602,17 +606,17 @@
             configLink: 'لینک کانفیگ',
             downloadApps: 'دانلود برنامه‌ها',
             downloadAppsDesc: 'با توجه به سیستم عامل خود برنامه مورد نظر را دانلود کنید',
-            hiddifyWindows: 'هیدیفای ویندوز',
-            hiddifyAndroid: 'هیدیفای اندروید',
-            hiddifyApple: 'هیدیفای اپل',
-            singboxAndroid: 'سینگ‌ باکس اندروید',
-            singboxApple: 'سینگ‌ باکس اپل',
+            hiddifyWindows: 'Hiddify ویندوز',
+            hiddifyAndroid: 'Hiddify اندروید',
+            hiddifyApple: 'Hiddify اپل',
+            singboxAndroid: 'Sing-Box اندروید',
+            singboxApple: 'Sing-Box اپل',
             addSubscription: 'افزودن اشتراک',
             addSubscriptionDesc: 'با توجه به برنامه ای که نصب کرده اید روی دکمه مربوط به آن کلیک کنید',
             hiddifySettings: 'تنظیمات هیدیفای',
             singboxSettings: 'تنظیمات سینگ باکس',
             connectAndUse: 'اتصال و استفاده',
-            connectAndUseDesc: 'در برنامه هیدیفای روی دکمه CONNECT و در سینگ باکس روی ENABLE کلیک کنید. پیشنهاد می شود روزانه لینک اشتراک خود را از داخل اپلیکیشن دانلود شده آپدیت کنید',
+            connectAndUseDesc: 'توصیه می‌شود روزانه آپدیت و همه‌ی کانفیگ ها بررسی و تست شوند تا به بهترین کانفیگ با بهترین پینگ وصل شوید که اتصال پایداری داشته باشید.',
             qrCode: 'کد QR',
             download: 'دانلود',
             start: 'شروع',
@@ -620,6 +624,10 @@
             enter: 'ورود'
           },
           en: {
+            streisand: 'Streisand',
+            v2rayNG: 'V2rayNG',
+            streisandSettings: 'Streisand Settings',
+            v2rayNGSettings: 'V2rayNG Settings',
             subscriptionInfo: 'Subscription Page',
             username: 'Username',
             status: 'Status',
@@ -658,7 +666,7 @@
             hiddifySettings: 'Hiddify Settings',
             singboxSettings: 'Sing-box Settings',
             connectAndUse: 'Connect and Use',
-            connectAndUseDesc: 'Click CONNECT in Hiddify app or ENABLE in Sing-box. It is recommended to update your subscription link daily from within the app.',
+            connectAndUseDesc: 'It is recommended to update daily and check/test all configs to connect to the best config with the lowest ping for a stable connection.',
             qrCode: 'QR Code',
             download: 'Download',
             start: 'Start',
@@ -820,6 +828,16 @@
           }
 
           return `<span class="traffic-value">${this.formatBytes(usedTraffic)} / ${this.formatBytes(dataLimit)}</span>`;
+        },
+
+        importStreisand() {
+          const url = '{{ user.subscription_url }}';
+          window.location.href = `streisand://import/${encodeURIComponent(url)}`;
+        },
+
+        importV2rayNG() {
+          const url = '{{ user.subscription_url }}';
+          window.location.href = `v2rayng://install-config?url=${encodeURIComponent(url)}`;
         },
 
         importHiddify() {
@@ -1151,6 +1169,44 @@
               <p class="my-text-content" x-text="translations[currentLang].downloadAppsDesc"></p>
 
               <div class="download-buttons">
+
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#apple"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].streisand"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button" href="https://apps.apple.com/us/app/streisand/id6450534064"
+                      target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#android"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].v2rayNG"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button" href="https://play.google.com/store/apps/details?id=com.v2ray.ang"
+                      target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download"></span>
+                    </a>
+                  </div>
+                </div>
+
                 <div class="config-link">
                   <div class="config-link-name">
                     <svg class="bi" width="16" height="16">
@@ -1265,6 +1321,42 @@
                       <svg class="bi" width="16" height="16">
                         <use href="#gear-fill"></use>
                       </svg>
+                      <span x-text="translations[currentLang].streisandSettings"></span>
+                    </div>
+                    <div class="config-link-buttons">
+                      <a class="settings-button" href="#"
+                        @click.prevent="importStreisand(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
+                        <svg class="bi" width="16" height="16">
+                          <use href="#cloud-plus"></use>
+                        </svg>
+                        <span x-text="translations[currentLang].settings"></span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="config-link">
+                    <div class="config-link-name">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#gear-fill"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].v2rayNGSettings"></span>
+                    </div>
+                    <div class="config-link-buttons">
+                      <a class="settings-button" href="#"
+                        @click.prevent="importV2rayNG(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
+                        <svg class="bi" width="16" height="16">
+                          <use href="#cloud-plus"></use>
+                        </svg>
+                        <span x-text="translations[currentLang].settings"></span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="config-link">
+                    <div class="config-link-name">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#gear-fill"></use>
+                      </svg>
                       <span x-text="translations[currentLang].hiddifySettings"></span>
                     </div>
                     <div class="config-link-buttons">
@@ -1273,7 +1365,7 @@
                         <svg class="bi" width="16" height="16">
                           <use href="#cloud-plus"></use>
                         </svg>
-                        <span x-text="translations[currentLang].settings || 'تنظیمات'"></span>
+                        <span x-text="translations[currentLang].settings"></span>
                       </a>
                     </div>
                   </div>
@@ -1291,7 +1383,7 @@
                         <svg class="bi" width="16" height="16">
                           <use href="#cloud-plus"></use>
                         </svg>
-                        <span x-text="translations[currentLang].settings || 'تنظیمات'"></span>
+                        <span x-text="translations[currentLang].settings"></span>
                       </a>
                     </div>
                   </div>
