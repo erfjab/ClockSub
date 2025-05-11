@@ -1,6 +1,6 @@
 ![Preview](preview.png)
 
-## Marzneshin
+## Marzneshin [server]
 
 1. **Download the template:**
    ```sh
@@ -23,3 +23,10 @@
    marzneshin restart
    ```
 
+## Marzneshin [host]
+
+check and use:
+
+```bash
+https://raw.githubusercontent.com/erfjab/ClockSub/refs/heads/main/marzneshin/marzneshin.php
+```
