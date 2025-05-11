@@ -523,6 +523,55 @@
       flex-shrink: 0;
     }
 
+    .accordion-guide {
+      margin-bottom: 2rem;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--my-alpha-gray);
+      transition: all 0.3s ease;
+    }
+
+    .accordion-item:last-child {
+      border-bottom: none;
+    }
+
+    .accordion-header {
+      padding: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-header:hover {
+      background-color: var(--my-dark-gray);
+    }
+
+    .accordion-content {
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .accordion-arrow {
+      transition: transform 0.3s ease;
+      width: 1em;
+      height: 1em;
+    }
+
+    .accordion-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .accordion-body {
+      padding: 0 1rem 1rem;
+    }
+
     @media (max-width: 767.98px) {
       .my-container {
         padding: 50px 15px;
@@ -530,6 +579,10 @@
 
       .my-block-big {
         padding: 1.25rem 1.5rem 1.5rem;
+      }
+
+      .accordion-title {
+        font-size: 1.1rem;
       }
     }
 
@@ -1081,14 +1134,283 @@
       </button>
     </div>
 
-    <h3 class="my-text-heading mb-4 fw-bold d-flex align-items-center gap-2"
-      :class="currentLang === 'fa' ? 'text-start' : 'text-end'" style="font-size: 1.5rem; letter-spacing: -0.5px;">
-      <svg class="bi" style="width: 1.2em; height: 1.2em;">
-        <use href="#question-circle"></use>
-      </svg>
-      <span x-text="translations[currentLang].connectionGuide"></span>
-    </h3>
+    <!-- بخش آکاردئون جدید -->
+    <div class="accordion-guide" x-data="{ 
+      activeTab: null,
+      toggleTab(tab) {
+        this.activeTab = this.activeTab === tab ? null : tab;
+      }
+    }">
+      <div class="my-block-big">
+        <!-- آیتم دانلود نرم‌افزار -->
+        <div class="accordion-item" :class="{ 'active': activeTab === 'download' }">
+          <div class="accordion-header" @click="toggleTab('download')">
+            <div class="accordion-title">
+              <svg class="bi">
+                <use href="#cloud-arrow-down"></use>
+              </svg>
+              <span x-text="translations[currentLang].downloadApps"></span>
+            </div>
+            <svg class="bi accordion-arrow" x-bind:style="activeTab === 'download' ? 'transform: rotate(90deg);' : ''">
+              <use href="#arrow-down-circle"></use>
+            </svg>
+          </div>
+          <div class="accordion-content" x-show="activeTab === 'download'" x-collapse>
+            <div class="accordion-body">
+              <p class="my-text-content mb-3" x-text="translations[currentLang].downloadAppsDesc"></p>
+              <div class="download-buttons">
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#apple"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].streisand"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button" href="https://apps.apple.com/us/app/streisand/id6450534064"
+                      target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#android"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].v2rayNG"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button" href="https://play.google.com/store/apps/details?id=com.v2ray.ang"
+                      target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#microsoft"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].hiddifyWindows"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button"
+                      href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe"
+                      role="button" rel="noopener noreferrer" target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe', '_blank'), 300);">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#android"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].hiddifyAndroid"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button"
+                      href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk"
+                      role="button" rel="noopener noreferrer" target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk', '_blank'), 300);">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#apple"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].hiddifyApple"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button" href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532"
+                      role="button" rel="noopener noreferrer" target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532', '_blank'), 300);">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#android"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].singboxAndroid"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button"
+                      href="https://github.com/SagerNet/sing-box/releases/download/v1.11.6/SFA-1.11.6-universal.apk"
+                      role="button" rel="noopener noreferrer" target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://github.com/SagerNet/sing-box/releases/download/v1.11.6/SFA-1.11.6-universal.apk', '_blank'), 300);">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#apple"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].singboxApple"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="download-button" href="https://apps.apple.com/us/app/sing-box-vt/id6673731168"
+                      role="button" rel="noopener noreferrer" target="_blank"
+                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://apps.apple.com/us/app/sing-box-vt/id6673731168', '_blank'), 300);">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-arrow-down"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- آیتم تنظیمات نرم‌افزار -->
+        <div class="accordion-item" :class="{ 'active': activeTab === 'settings' }">
+          <div class="accordion-header" @click="toggleTab('settings')">
+            <div class="accordion-title">
+              <svg class="bi">
+                <use href="#gear-fill"></use>
+              </svg>
+              <span x-text="translations[currentLang].settings"></span>
+            </div>
+            <svg class="bi accordion-arrow" x-bind:style="activeTab === 'settings' ? 'transform: rotate(90deg);' : ''">
+              <use href="#arrow-down-circle"></use>
+            </svg>
+          </div>
+          <div class="accordion-content" x-show="activeTab === 'settings'" x-collapse>
+            <div class="accordion-body">
+              <p class="my-text-content mb-3" x-text="translations[currentLang].addSubscriptionDesc"></p>
+              <div class="download-buttons">
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#gear-fill"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].streisandSettings"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="settings-button" href="#"
+                      @click.prevent="importStreisand(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-plus"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].settings"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#gear-fill"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].v2rayNGSettings"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="settings-button" href="#"
+                      @click.prevent="importV2rayNG(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-plus"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].settings"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#gear-fill"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].hiddifySettings"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="settings-button" href="#"
+                      @click.prevent="importHiddify(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-plus"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].settings"></span>
+                    </a>
+                  </div>
+                </div>
+                <div class="config-link">
+                  <div class="config-link-name">
+                    <svg class="bi" width="16" height="16">
+                      <use href="#gear-fill"></use>
+                    </svg>
+                    <span x-text="translations[currentLang].singboxSettings"></span>
+                  </div>
+                  <div class="config-link-buttons">
+                    <a class="settings-button" href="#"
+                      @click.prevent="importSingbox(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
+                      <svg class="bi" width="16" height="16">
+                        <use href="#cloud-plus"></use>
+                      </svg>
+                      <span x-text="translations[currentLang].settings"></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- آیتم راهنمای اتصال -->
+        <div class="accordion-item" :class="{ 'active': activeTab === 'connection' }">
+          <div class="accordion-header" @click="toggleTab('connection')">
+            <div class="accordion-title">
+              <svg class="bi">
+                <use href="#question-circle"></use>
+              </svg>
+              <span x-text="translations[currentLang].connectionGuide"></span>
+            </div>
+            <svg class="bi accordion-arrow"
+              x-bind:style="activeTab === 'connection' ? 'transform: rotate(90deg);' : ''">
+              <use href="#arrow-down-circle"></use>
+            </svg>
+          </div>
+          <div class="accordion-content" x-show="activeTab === 'connection'" x-collapse>
+            <div class="accordion-body">
+              <p class="my-text-content mb-3" x-text="translations[currentLang].connectAndUseDesc"></p>
+              <div class="my-text-content">
+                <p>1. برنامه مورد نظر را دانلود و نصب کنید</p>
+                <p>2. اشتراک را به برنامه اضافه کنید</p>
+                <p>3. اتصال را فعال نمایید</p>
+                <p>4. از اینترنت آزاد لذت ببرید!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="modal my-modal fade" id="get-link-modal" tabindex="-1" aria-labelledby="linkModalLabel"
       aria-hidden="true">
@@ -1153,248 +1475,6 @@
                   </div>
                 </div>
               </template>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-content">
-      <div id="tab-pc" class="tab-pane my-tab-pane fade show active">
-        <div class="row g-3">
-          <div class="col-12 col-lg-6">
-            <div class="my-block-big h-100">
-              <span class="my-step-counter mb-3"></span>
-              <h5 class="my-text-heading fw-semibold" x-text="translations[currentLang].downloadApps"></h5>
-              <p class="my-text-content" x-text="translations[currentLang].downloadAppsDesc"></p>
-
-              <div class="download-buttons">
-
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#apple"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].streisand"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button" href="https://apps.apple.com/us/app/streisand/id6450534064"
-                      target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`)">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download"></span>
-                    </a>
-                  </div>
-                </div>
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#android"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].v2rayNG"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button" href="https://play.google.com/store/apps/details?id=com.v2ray.ang"
-                      target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`)">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download"></span>
-                    </a>
-                  </div>
-                </div>
-
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#microsoft"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].hiddifyWindows"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button"
-                      href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe"
-                      role="button" rel="noopener noreferrer" target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe', '_blank'), 300);">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
-                    </a>
-                  </div>
-                </div>
-
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#android"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].hiddifyAndroid"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button"
-                      href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk"
-                      role="button" rel="noopener noreferrer" target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk', '_blank'), 300);">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
-                    </a>
-                  </div>
-                </div>
-
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#apple"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].hiddifyApple"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button" href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532"
-                      role="button" rel="noopener noreferrer" target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532', '_blank'), 300);">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
-                    </a>
-                  </div>
-                </div>
-
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#android"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].singboxAndroid"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button"
-                      href="https://github.com/SagerNet/sing-box/releases/download/v1.11.6/SFA-1.11.6-universal.apk"
-                      role="button" rel="noopener noreferrer" target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://github.com/SagerNet/sing-box/releases/download/v1.11.6/SFA-1.11.6-universal.apk', '_blank'), 300);">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
-                    </a>
-                  </div>
-                </div>
-
-                <div class="config-link">
-                  <div class="config-link-name">
-                    <svg class="bi" width="16" height="16">
-                      <use href="#apple"></use>
-                    </svg>
-                    <span x-text="translations[currentLang].singboxApple"></span>
-                  </div>
-                  <div class="config-link-buttons">
-                    <a class="download-button" href="https://apps.apple.com/us/app/sing-box-vt/id6673731168"
-                      role="button" rel="noopener noreferrer" target="_blank"
-                      @click="handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].start}</span>`); setTimeout(() => window.open('https://apps.apple.com/us/app/sing-box-vt/id6673731168', '_blank'), 300);">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#cloud-arrow-down"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].download || 'دانلود'"></span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-lg-6">
-            <div class="equal-height-container">
-              <div class="my-block-big mb-3">
-                <span class="my-step-counter mb-3"></span>
-                <h5 class="my-text-heading fw-semibold" x-text="translations[currentLang].addSubscription"></h5>
-                <p class="my-text-content" x-text="translations[currentLang].addSubscriptionDesc"></p>
-
-                <div class="download-buttons">
-                  <div class="config-link">
-                    <div class="config-link-name">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#gear-fill"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].streisandSettings"></span>
-                    </div>
-                    <div class="config-link-buttons">
-                      <a class="settings-button" href="#"
-                        @click.prevent="importStreisand(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
-                        <svg class="bi" width="16" height="16">
-                          <use href="#cloud-plus"></use>
-                        </svg>
-                        <span x-text="translations[currentLang].settings"></span>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div class="config-link">
-                    <div class="config-link-name">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#gear-fill"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].v2rayNGSettings"></span>
-                    </div>
-                    <div class="config-link-buttons">
-                      <a class="settings-button" href="#"
-                        @click.prevent="importV2rayNG(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
-                        <svg class="bi" width="16" height="16">
-                          <use href="#cloud-plus"></use>
-                        </svg>
-                        <span x-text="translations[currentLang].settings"></span>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div class="config-link">
-                    <div class="config-link-name">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#gear-fill"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].hiddifySettings"></span>
-                    </div>
-                    <div class="config-link-buttons">
-                      <a class="settings-button" href="#"
-                        @click.prevent="importHiddify(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
-                        <svg class="bi" width="16" height="16">
-                          <use href="#cloud-plus"></use>
-                        </svg>
-                        <span x-text="translations[currentLang].settings"></span>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div class="config-link">
-                    <div class="config-link-name">
-                      <svg class="bi" width="16" height="16">
-                        <use href="#gear-fill"></use>
-                      </svg>
-                      <span x-text="translations[currentLang].singboxSettings"></span>
-                    </div>
-                    <div class="config-link-buttons">
-                      <a class="settings-button" href="#"
-                        @click.prevent="importSingbox(); handleButtonFeedback($el, $el.innerHTML, `<svg class='bi' width='16' height='16'><use href='#cloud-check'></use></svg> <span>${translations[currentLang].enter}</span>`)">
-                        <svg class="bi" width="16" height="16">
-                          <use href="#cloud-plus"></use>
-                        </svg>
-                        <span x-text="translations[currentLang].settings"></span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="my-block-big">
-                <span class="my-step-counter mb-3"></span>
-                <h5 class="my-text-heading fw-semibold" x-text="translations[currentLang].connectAndUse"></h5>
-                <p class="my-text-content mb-2" x-text="translations[currentLang].connectAndUseDesc"></p>
-              </div>
             </div>
           </div>
         </div>
