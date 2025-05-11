@@ -1,6 +1,6 @@
 ![Preview](preview.png)
 
-## Installation Guide For Marzneshin
+## Marzneshin
 
 1. **Download the template:**
    ```sh
@@ -25,7 +25,7 @@
 
 ---
 
-## Installation Guide For Marzban
+## Marzban
 
 1. **Download the template:**
    ```sh
