@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ناحیه کاربری</title>
+  <title>Subscription Page</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z'/><path d='M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0'/></svg>">
 
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500&display=swap" as="style">
@@ -571,6 +571,7 @@
             expired: 'منقضی‌شده',
             disabled: 'غیرفعال',
             unlimited: 'نامحدود',
+            waitingForActivation: 'در انتظار فعال‌سازی',
             telegramSupport: 'پشتیبانی',
             showConfigs: 'کانفیگ‌ها',
             connectionGuide: 'راهنمای اتصال',
@@ -616,6 +617,7 @@
             expired: 'Expired',
             disabled: 'Disabled',
             unlimited: 'Unlimited',
+            waitingForActivation: 'Waiting for activation',
             telegramSupport: 'Support',
             showConfigs: 'Configs',
             connectionGuide: 'Connection Guide',
@@ -744,34 +746,45 @@
           return `${bytes.toFixed(2)} ${units[i]}`;
         },
 
-        getStatusText(statusValue) {
-          const statusMap = {
-            'active': this.translations[this.currentLang].active,
-            'limited': this.translations[this.currentLang].limited,
-            'expired': this.translations[this.currentLang].expired,
-            'disabled': this.translations[this.currentLang].disabled
-          };
-          return statusValue.startsWith('{') ? this.translations[this.currentLang].anonymous : (statusMap[statusValue] || this.translations[this.currentLang].anonymous);
+        getStatusText(isActive) {
+          return isActive ? this.translations[this.currentLang].active : this.translations[this.currentLang].disabled;
         },
 
-        getExpireText(expire) {
-          if (!expire) return this.translations[this.currentLang].unlimited;
-          if (expire.startsWith('{')) return this.translations[this.currentLang].anonymous;
-          
-          if (this.currentLang === 'fa') {
-            return `تا ${new Date(expire).toLocaleDateString('fa-IR')}`;
-          } else {
-            return `Until ${new Date(expire).toLocaleDateString('en-US')}`;
+        getExpireText(expireStrategy, expireDate) {
+          const strategy = typeof expireStrategy === 'string' 
+            ? expireStrategy.replace('UserExpireStrategy.', '').toLowerCase()
+            : '';
+
+          if (strategy === 'never') {
+            return this.translations[this.currentLang].unlimited;
           }
+
+          if ((strategy === 'fixed_date') && expireDate) {
+            try {
+              const date = new Date(expireDate);
+              if (isNaN(date)) return '';
+              
+              if (this.currentLang === 'fa') {
+                return `تا ${date.toLocaleDateString('fa-IR')}`;
+              } else {
+                return `Until ${date.toLocaleDateString('en-US')}`;
+              }
+            } catch (e) {
+              console.error('Date formatting error:', e);
+              return '';
+            }
+          }
+
+          if (strategy === 'start_on_first_use') {
+            return this.translations[this.currentLang].waitingForActivation;
+          }
+
+          return this.currentLang === 'fa' ? 'نامعتبر' : 'Invalid';
         },
 
         getTrafficText(usedTraffic, dataLimit) {
-          if (dataLimit === null || dataLimit === 'null') {
+          if (!dataLimit || dataLimit === 0) {
             return `<span class="traffic-value">${this.formatBytes(usedTraffic)} / ∞</span>`;
-          }
-          
-          if (dataLimit.toString().startsWith('{')) {
-            return this.translations[this.currentLang].anonymous;
           }
           
           return `<span class="traffic-value">${this.formatBytes(usedTraffic)} / ${this.formatBytes(dataLimit)}</span>`;
@@ -802,7 +815,7 @@
         },
         
         getInitial(username) {
-          if (!username || username.startsWith('{')) return '?';
+          if (!username) return '?';
           return username.charAt(0).toUpperCase();
         }
       };
@@ -830,7 +843,7 @@
   <symbol id="sun" viewBox="0 0 16 16"><path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></symbol>
   <symbol id="moon" viewBox="0 0 16 16"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></symbol>
   <symbol id="qr-code" viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm8-12v8h8V3h-8zm6 6h-4V5h4v4zM13 13h2v2h-2zM15 15h2v2h-2zM13 17h2v2h-2zM11 13h2v2h-2zM15 17h2v2h-2zM17 13h2v2h-2zM17 17h2v2h-2zM19 19h2v2h-2zM19 15h2v2h-2z"/></symbol>
-  <symbol id="question-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/></symbol>
+  <symbol id="question-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></symbol>
   <symbol id="translate" viewBox="0 0 16 16"><path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286zm1.634-.736L5.5 3.956h-.049l-.679 2.022z"/><path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm7.138 9.995q.289.451.63.846c-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6 6 0 0 1-.415-.492 2 2 0 0 1-.94.31"/></symbol>
   <symbol id="gear-fill" viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></symbol>
 </svg>
@@ -867,34 +880,37 @@
             <svg class="bi"><use href="#person-circle"></use></svg>
             <h5 class="my-text-heading mb-0" x-text="translations[currentLang].username"></h5>
           </div>
-          <p class="text-truncate my-text-content mb-0" x-text="username.startsWith('{') ? translations[currentLang].anonymous : username"></p>
+          <p class="text-truncate my-text-content mb-0" x-text="username"></p>
         </div>
       </div>
       
       <div class="col">
-        <div class="my-block" x-data="{statusValue: '{{ user.status.value }}'}">
+        <div class="my-block" x-data="{isActive: {{ user.is_active|lower }}}">
           <div class="d-flex flex-row align-items-center mb-3">
-            <svg class="bi"><use x-bind:href="statusValue == 'active' || statusValue.startsWith('{') ? '#check-circle' : '#x-circle'"></use></svg>
+            <svg class="bi"><use x-bind:href="isActive ? '#check-circle' : '#x-circle'"></use></svg>
             <h5 class="my-text-heading mb-0" x-text="translations[currentLang].status"></h5>
           </div>
-          <p class="text-truncate my-text-content mb-0" x-text="getStatusText(statusValue)"></p>
+          <p class="text-truncate my-text-content mb-0" x-text="getStatusText(isActive)"></p>
         </div>
       </div>
       
       <div class="col">
-        <div class="my-block" x-data="{expire: '{% if user.expire %}{{ user.expire | datetime }}{% endif %}'}">
+        <div class="my-block" x-data="{
+          expireStrategy: '{{ user.expire_strategy }}',
+          expireDate: '{{ user.expire_date }}'
+        }">
           <div class="d-flex flex-row align-items-center mb-3">
             <svg class="bi"><use href="#clock"></use></svg>
             <h5 class="my-text-heading mb-0" x-text="translations[currentLang].duration"></h5>
           </div>
-          <p class="text-truncate my-text-content mb-0" x-text="getExpireText(expire)"></p>
+          <p class="text-truncate my-text-content mb-0" x-text="getExpireText(expireStrategy, expireDate)"></p>
         </div>
       </div>
       
       <div class="col">
         <div class="my-block" x-data="{
           usedTraffic: {{ user.used_traffic }},
-          dataLimit: {{ user.data_limit if user.data_limit else 'null' }}
+          dataLimit: {{ user.data_limit if user.data_limit else 0 }}
         }">
           <div class="d-flex flex-row align-items-center mb-3">
             <svg class="bi"><use href="#arrow-down-circle"></use></svg>
@@ -923,91 +939,72 @@
         <span x-text="translations[currentLang].connectionGuide"></span>
     </h3>
     
-    <div class="modal my-modal fade" id="get-link-modal" tabindex="-1" aria-labelledby="linkModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header position-relative">
-            <h5 class="my-text-heading fw-semibold mb-0" id="linkModalLabel" x-text="translations[currentLang].configLinks"></h5>
-            <button type="button" 
-                    class="modal-close-btn" 
-                    data-bs-dismiss="modal"
-                    x-text="translations[currentLang].close">
-            </button>
-          </div>
-          <div class="modal-body" x-data="{
-            subscriptionUrl: '{{ user.subscription_url }}',
-            links: {{ links | tojson | safe }},
-            getLinkName(link) {
-              if (link === this.subscriptionUrl) return this.translations[this.currentLang].subscriptionLink;
-              
-              try {
-                if (link.startsWith('vmess://')) {
-                  const config = JSON.parse(atob(link.replace('vmess://', '')));
-                  return config.ps || this.translations[this.currentLang].vMessConfig;
-                }
-                else if (link.startsWith('vless://')) {
-                  const url = new URL(link);
-                  const params = new URLSearchParams(url.hash.slice(1));
-                  return params.get('remark') || decodeURIComponent(url.hash.slice(1)) || this.translations[this.currentLang].vLessConfig;
-                }
-                else if (link.startsWith('trojan://')) {
-                  const url = new URL(link);
-                  const params = new URLSearchParams(url.hash.slice(1));
-                  return params.get('remark') || this.translations[this.currentLang].trojanConfig;
-                }
-                else if (link.startsWith('ss://')) {
-                  const decoded = atob(link.replace('ss://', '').split('@')[0]);
-                  const parts = decoded.split(':');
-                  return parts.length > 1 ? decodeURIComponent(parts[1]) || this.translations[this.currentLang].shadowsocksConfig : this.translations[this.currentLang].shadowsocksConfig;
-                }
-                else {
-                  const url = new URL(link);
-                  const params = new URLSearchParams(url.hash.slice(1));
-                  return params.get('remark') || decodeURIComponent(url.hash.slice(1)) || this.translations[this.currentLang].configLink;
-                }
-              } catch {
-                if (link.includes('#')) {
-                  return decodeURIComponent(link.split('#')[1]) || this.translations[this.currentLang].configLink;
-                }
-                return this.translations[this.currentLang].configLink;
-              }
+
+  <div class="modal my-modal fade" id="get-link-modal" tabindex="-1" aria-labelledby="linkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header position-relative">
+          <h5 class="my-text-heading fw-semibold mb-0" id="linkModalLabel" x-text="translations[currentLang].configLinks"></h5>
+          <button type="button" 
+                  class="modal-close-btn" 
+                  data-bs-dismiss="modal"
+                  x-text="translations[currentLang].close">
+          </button>
+        </div>
+        <div class="modal-body" x-data="{
+          subscriptionUrl: '{{ user.subscription_url }}',
+          links: [
+            {% for link in links %}
+              '{{ link }}'{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ],
+          getLinkName(link) {
+            if (link === this.subscriptionUrl) {
+              return this.translations[this.currentLang].subscriptionLink;
             }
-          }">
-            <p class="my-text-content mb-3" x-text="translations[currentLang].configLinksDesc"></p>
-            <div class="mb-3">
+
+            if (link.includes('#')) {
+              return decodeURIComponent(link.split('#')[1]);
+            }
+
+            return this.translations[this.currentLang].configLink;
+          }
+        }">
+          <p class="my-text-content mb-3" x-text="translations[currentLang].configLinksDesc"></p>
+          <div class="mb-3">
+            <div class="config-link">
+              <div class="config-link-name" x-text="translations[currentLang].subscriptionLink"></div>
+              <div class="config-link-buttons">
+                <button class="config-link-qr-btn" @click="$dispatch('show-qr', {url: subscriptionUrl, name: translations[currentLang].subscriptionLink})">
+                  <svg class="bi"><use href="#qr-code"></use></svg>
+                </button>
+                <button class="config-link-copy-btn" 
+                @click="copyLink(subscriptionUrl, $el)" 
+                x-html="`<svg class='bi' width='14' height='14'><use href='#copy'></use></svg> <span>${translations[currentLang].copy}</span>`">
+                </button>
+              </div>
+            </div>
+            
+            <template x-for="(link, index) in links" :key="index">
               <div class="config-link">
-                <div class="config-link-name" x-text="translations[currentLang].subscriptionLink"></div>
+                <div class="config-link-name" x-text="getLinkName(link)"></div>
                 <div class="config-link-buttons">
-                  <button class="config-link-qr-btn" @click="$dispatch('show-qr', {url: subscriptionUrl, name: translations[currentLang].subscriptionLink})">
+                  <button class="config-link-qr-btn" @click="$dispatch('show-qr', {url: link, name: getLinkName(link)})">
                     <svg class="bi"><use href="#qr-code"></use></svg>
                   </button>
                   <button class="config-link-copy-btn" 
-                  @click="copyLink(subscriptionUrl, $el)" 
-                  x-html="`<svg class='bi' width='14' height='14'><use href='#copy'></use></svg> <span>${translations[currentLang].copy}</span>`">
+                  @click="copyLink(link, $el)" 
+                  x-html="`<svg class='bi' width='16' height='16'><use href='#copy'></use></svg> <span>${translations[currentLang].copy}</span>`">
                   </button>
                 </div>
               </div>
-              
-              <template x-for="(link, index) in links" :key="index">
-                <div class="config-link">
-                  <div class="config-link-name" x-text="getLinkName(link)"></div>
-                  <div class="config-link-buttons">
-                    <button class="config-link-qr-btn" @click="$dispatch('show-qr', {url: link, name: getLinkName(link)})">
-                      <svg class="bi"><use href="#qr-code"></use></svg>
-                    </button>
-                    <button class="config-link-copy-btn" 
-                    @click="copyLink(link, $el)" 
-                    x-html="`<svg class='bi' width='16' height='16'><use href='#copy'></use></svg> <span>${translations[currentLang].copy}</span>`">
-                    </button>
-                  </div>
-                </div>
-              </template>
-            </div>
+            </template>
           </div>
         </div>
       </div>
     </div>
-   
+  </div>
+
     <div class="tab-content">
       <div id="tab-pc" class="tab-pane my-tab-pane fade show active">
         <div class="row g-3">
